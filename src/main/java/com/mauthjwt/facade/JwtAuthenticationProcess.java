@@ -4,10 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import com.mauthjwt.configuration.JwtTokenUtil;
+import com.mauthjwt.service.JwtUserDetailsService;
 
 @Component
 public class JwtAuthenticationProcess {
@@ -16,7 +16,7 @@ public class JwtAuthenticationProcess {
 	private static AuthenticationManager authenticationManager;
 	
 	@Autowired 
-	private UserDetailsService userDetailsService;
+	private JwtUserDetailsService jwtUserDetailsService;
 	
 	@Autowired 
 	private JwtTokenUtil jwtTokenUtil;
@@ -28,7 +28,7 @@ public class JwtAuthenticationProcess {
 	}
 	
 	public UserDetails loadUser(String username) {
-			return userDetailsService.loadUserByUsername(username);
+			return jwtUserDetailsService.loadUserByUsername(username);
 	}
 	
 	public String generateToken(UserDetails userDetails) {
