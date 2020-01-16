@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.mauthjwt.configuration.JwtTokenUtil;
@@ -18,13 +19,16 @@ public class JwtAuthenticationProcess {
 	@Autowired 
 	private JwtUserDetailsService jwtUserDetailsService;
 	
+	@Autowired
+	private PasswordEncoder bcryptEncoder;
+	
 	@Autowired 
 	private JwtTokenUtil jwtTokenUtil;
 	
 	
 	public void authenticate(String username, String password) throws Exception {
 		authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(username,password) );
+				new UsernamePasswordAuthenticationToken(username,bcryptEncoder.encode(password)) );
 	}
 	
 	public UserDetails loadUser(String username) {
