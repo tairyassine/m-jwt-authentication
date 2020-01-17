@@ -19,8 +19,6 @@ public class JwtAuthenticationProcess {
 	@Autowired 
 	private JwtUserDetailsService jwtUserDetailsService;
 	
-	@Autowired
-	private PasswordEncoder bcryptEncoder;
 	
 	@Autowired 
 	private JwtTokenUtil jwtTokenUtil;
@@ -28,7 +26,7 @@ public class JwtAuthenticationProcess {
 	
 	public void authenticate(String username, String password) throws Exception {
 		authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(username,bcryptEncoder.encode(password)) );
+				new UsernamePasswordAuthenticationToken(username,password) );
 	}
 	
 	public UserDetails loadUser(String username) {
