@@ -1,6 +1,8 @@
 package com.mauthjwt.configuration;
 
+import org.h2.server.web.WebServlet;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -48,11 +50,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
 	}
 	
+   @Bean
+    ServletRegistrationBean h2servletRegistration(){
+        ServletRegistrationBean registrationBean = new ServletRegistrationBean( new WebServlet());
+        registrationBean.addUrlMappings("/h2/*");
+        return registrationBean;
+   }
+	
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		
 		httpSecurity.csrf().disable().
-		authorizeRequests().antMatchers("/authenticate").permitAll().
+		authorizeRequests().antMatchers("/authenticate","/h2/**").permitAll().
 		anyRequest().authenticated().and().
 		// stateless session; session won't be used to store user's state.
 		exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().

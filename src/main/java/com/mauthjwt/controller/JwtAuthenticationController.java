@@ -11,14 +11,19 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mauthjwt.dao.UserDAO;
 import com.mauthjwt.facade.JwtAuthenticationProcess;
+import com.mauthjwt.model.Credentials;
 import com.mauthjwt.model.JwtRequest;
 import com.mauthjwt.model.JwtResponse;
+import com.mauthjwt.model.RegistrationRequest;
+import com.mauthjwt.model.UserDb;
 
 @RestController
 @CrossOrigin
@@ -30,6 +35,9 @@ public class JwtAuthenticationController {
 	
 	@Autowired
 	private AuthenticationManager authenticationManager;
+	
+	@Autowired
+	private UserDAO userDAO;
 	
 	@RequestMapping(value = "/authenticate", method = RequestMethod.POST)
 	public ResponseEntity<?> createAuthToken(@RequestBody JwtRequest authenticationRequest){
@@ -68,6 +76,21 @@ public class JwtAuthenticationController {
 		} catch (BadCredentialsException e) {
 			throw new Exception("INVALID_CREDENTIALS", e);
 		}
+	}
+	
+	@PostMapping("/register")
+	public ResponseEntity<?> register(@RequestBody RegistrationRequest registrationRequest){
+		UserDb user = new UserDb();
+		user.setEmail(registrationRequest.getEmail());
+		user.setFirstName(registrationRequest.getFirstName());
+		user.setLastName(registrationRequest.getLastName());
+		Credentials uc = new Credentials();
+		uc.setPassword(registrationRequest.getPassword());
+		user.setUserCredentials(uc);
+		uc.setUser(user);
+		
+		userDAO.save(user);
+		return ResponseEntity.ok("ok user sauvegardé");
 	}
 	
 
