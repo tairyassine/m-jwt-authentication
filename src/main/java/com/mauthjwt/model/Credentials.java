@@ -28,6 +28,10 @@ public class Credentials implements Serializable {
 	@MapsId
 	@JoinColumn(name = "id")
 	private UserDb user;
+	
+	public Credentials() {
+		
+	}
 
 	public Long getId() {
 		return id;

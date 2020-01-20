@@ -1,4 +1,4 @@
-package com.mauthjwt.model;
+package com.mauthjwt.envelope.response;
 
 import java.io.Serializable;
 

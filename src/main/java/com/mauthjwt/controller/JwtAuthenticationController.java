@@ -10,6 +10,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,11 +19,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mauthjwt.dao.UserDAO;
+import com.mauthjwt.envelope.request.JwtRequest;
+import com.mauthjwt.envelope.request.RegistrationRequest;
+import com.mauthjwt.envelope.response.JwtResponse;
 import com.mauthjwt.facade.JwtAuthenticationProcess;
 import com.mauthjwt.model.Credentials;
-import com.mauthjwt.model.JwtRequest;
-import com.mauthjwt.model.JwtResponse;
-import com.mauthjwt.model.RegistrationRequest;
 import com.mauthjwt.model.UserDb;
 
 @RestController
@@ -42,16 +43,22 @@ public class JwtAuthenticationController {
 	@RequestMapping(value = "/authenticate", method = RequestMethod.POST)
 	public ResponseEntity<?> createAuthToken(@RequestBody JwtRequest authenticationRequest){
 		String token=null;
+		String userCredential = null;
 		try {
-			
-			authenticate(authenticationRequest.getUsername(),
+			if(!StringUtils.isEmpty(authenticationRequest.getAlias())) {
+				userCredential= authenticationRequest.getAlias();
+			}else {
+				userCredential= authenticationRequest.getUserEmail();
+			}
+			authenticate(userCredential,
 					authenticationRequest.getPassword());
 			
-			final UserDetails userDetails = jwtAuthenticationProcess.loadUser(authenticationRequest.getUsername());
+			final UserDetails userDetails = jwtAuthenticationProcess.loadUser(userCredential);
 			token = jwtAuthenticationProcess.generateToken(userDetails);
 			logger.info("generated token => "+token);
 		}catch(Exception e) {
 			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body("an internal error occurred during the authentication attempt");
 		}
 		
 		return ResponseEntity.ok(new JwtResponse(token));
@@ -86,6 +93,7 @@ public class JwtAuthenticationController {
 		user.setLastName(registrationRequest.getLastName());
 		Credentials uc = new Credentials();
 		uc.setPassword(registrationRequest.getPassword());
+		uc.setAlias(registrationRequest.getAlias());
 		user.setUserCredentials(uc);
 		uc.setUser(user);
 		

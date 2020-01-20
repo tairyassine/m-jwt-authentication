@@ -12,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name="USER")
 public class UserDb implements Serializable {
@@ -25,12 +27,20 @@ public class UserDb implements Serializable {
 	@Column
 	private String lastName;
 	@Column
-	private String Email;
+	private String email;
 	
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL,
               fetch = FetchType.LAZY, optional = false)
+    @JsonIgnore
 	private Credentials userCredentials;
+    
+    /**
+     * default constructor
+     * */
+    public UserDb() {
+    	
+    }
 	
 	public Long getId() {
 		return id;
@@ -57,11 +67,11 @@ public class UserDb implements Serializable {
 	}
 
 	public String getEmail() {
-		return Email;
+		return email;
 	}
 
 	public void setEmail(String email) {
-		Email = email;
+		this.email = email;
 	}
 
 	public Credentials getUserCredentials() {
