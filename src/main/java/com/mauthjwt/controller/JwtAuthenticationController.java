@@ -4,6 +4,7 @@ package com.mauthjwt.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -18,13 +19,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mauthjwt.dao.UserDAO;
 import com.mauthjwt.envelope.request.JwtRequest;
 import com.mauthjwt.envelope.request.RegistrationRequest;
 import com.mauthjwt.envelope.response.JwtResponse;
+import com.mauthjwt.envelope.response.ResponseDTO;
 import com.mauthjwt.facade.JwtAuthenticationProcess;
-import com.mauthjwt.model.Credentials;
-import com.mauthjwt.model.UserDb;
+import com.mauthjwt.service.UserService;
 
 @RestController
 @CrossOrigin
@@ -38,7 +38,8 @@ public class JwtAuthenticationController {
 	private AuthenticationManager authenticationManager;
 	
 	@Autowired
-	private UserDAO userDAO;
+	private UserService userService;
+
 	
 	@RequestMapping(value = "/authenticate", method = RequestMethod.POST)
 	public ResponseEntity<?> createAuthToken(@RequestBody JwtRequest authenticationRequest){
@@ -85,20 +86,20 @@ public class JwtAuthenticationController {
 		}
 	}
 	
-	@PostMapping("/register")
+
+	@RequestMapping(value = "/register", method = RequestMethod.POST,
+	produces = { "application/json" })
 	public ResponseEntity<?> register(@RequestBody RegistrationRequest registrationRequest){
-		UserDb user = new UserDb();
-		user.setEmail(registrationRequest.getEmail());
-		user.setFirstName(registrationRequest.getFirstName());
-		user.setLastName(registrationRequest.getLastName());
-		Credentials uc = new Credentials();
-		uc.setPassword(registrationRequest.getPassword());
-		uc.setAlias(registrationRequest.getAlias());
-		user.setUserCredentials(uc);
-		uc.setUser(user);
-		
-		userDAO.save(user);
-		return ResponseEntity.ok("ok user sauvegardé");
+		ResponseDTO reponseDTO = new ResponseDTO();
+		logger.info("registration started");
+		try {
+			userService.saveUser(registrationRequest);			
+		}catch(Exception e) {
+			return ResponseEntity.badRequest().body("an intrernal error occured during the registration attempt");
+		}
+		reponseDTO.setStatut(200);
+		reponseDTO.addMessageSuccess("1", "user created with success");
+		return ResponseEntity.ok().body(reponseDTO);
 	}
 	
 
