@@ -2,7 +2,9 @@ package com.mauthjwt.envelope.response;
 
 import java.io.Serializable;
 
-public class JwtResponse implements Serializable {
+import com.mauthjwt.web.dto.commun.ResultSet;
+
+public class JwtResponse implements Serializable,ResultSet {
 
 	/**
 	 * 
