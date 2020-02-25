@@ -9,6 +9,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -34,6 +35,9 @@ public class UserDb implements Serializable {
               fetch = FetchType.LAZY, optional = false)
     @JsonIgnore
 	private Credentials userCredentials;
+    
+    @ManyToOne
+    private Profil profil;
     
     /**
      * default constructor
