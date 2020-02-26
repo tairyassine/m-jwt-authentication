@@ -6,6 +6,8 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn ;
 import javax.persistence.JoinTable;
@@ -17,6 +19,7 @@ import javax.persistence.Table;
 public class Profil implements Serializable {
 	
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	
 	@Column 
@@ -30,6 +33,13 @@ public class Profil implements Serializable {
     joinColumns = @JoinColumn(name = "pro_id"),
     inverseJoinColumns = @JoinColumn(name = "rol_id"))
 	private Set<Role> roles;
+	
+	public Profil(){}
+	
+	public Profil(String codeTypeUser,String libelle ){
+		this.codeTypeUser=codeTypeUser;
+		this.libelle= libelle;
+	}
 
 	public Long getId() {
 		return id;
